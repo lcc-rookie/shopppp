@@ -35,7 +35,7 @@
     <div>
       <template>
         <el-table :data="usersList" border style="width: 100%" stripe>
-          <!-- 加索引列 -->
+          <!-- 加索引列 index-->
           <el-table-column type="index"> </el-table-column>
           <el-table-column prop="username" label="用户名"> </el-table-column>
           <el-table-column prop="email" label="邮箱"> </el-table-column>
@@ -82,6 +82,7 @@
                   type="warning"
                   icon="el-icon-setting"
                   size="mini"
+                  @click="showSetRolesDialog(slotProps.row)"
                 ></el-button>
               </el-tooltip>
             </template>
@@ -159,6 +160,32 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 分配新角色的对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialog" width="50%">
+      <div>
+        <p>当前用户：{{ setRoleUserInfo.username }}</p>
+        <p>当前角色：{{ setRoleUserInfo.role_name }}</p>
+        <p>
+          请选择角色：<el-select
+            v-model="selectedRoleId"
+            placeholder="请选择角色"
+          >
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialog = false">取 消</el-button>
+        <el-button type="primary" @click="setRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
     
@@ -222,6 +249,11 @@ export default {
         email: "",
         mobile: "",
       },
+      setRoleDialog: false,
+      setRoleUserInfo: {},
+      rolesList: [],
+      // 已选中的角色id值
+      selectedRoleId: "",
     };
   },
   created() {
@@ -270,6 +302,7 @@ export default {
       this.$refs.addUserFormRef.validate(async (valid) => {
         if (!valid) return;
         const { data: res } = await this.$http.post("users", this.addUserForm);
+        console.log(res);
         if (res.meta.status !== 201) {
           this.$message.error("添加用户信息失败！");
         } else {
@@ -294,19 +327,17 @@ export default {
     // 用户信息编辑，并提交
     editUserInfo() {
       this.$refs.editUserFormRef.validate(async (valid) => {
-        if (!valid) {
-          this.$message.error("修改用户信息失败！");
-        } else {
-          const { data: res } = await this.$http.put(
-            "users/" + this.editForm.id,
-            { email: this.editForm.email, mobile: this.editForm.mobile }
-          );
-          if (res.meta.status !== 200) {
-            return this.$message.error("用户编辑信息失败！");
-          }
-          this.getUserList();
-          this.addUserDialogBool = false;
+        if (!valid) return;
+
+        const { data: res } = await this.$http.put(
+          "users/" + this.editForm.id,
+          { email: this.editForm.email, mobile: this.editForm.mobile }
+        );
+        if (res.meta.status !== 200) {
+          return this.$message.error("用户编辑信息失败！");
         }
+        this.getUserList();
+        this.addUserDialogBool = false;
       });
       this.showEditDialogBool = false;
     },
@@ -336,6 +367,39 @@ export default {
         return this.$message.error("删除用户操作失败");
       }
       this.getUserList();
+    },
+    // 展示分配角色对话框
+    async showSetRolesDialog(role) {
+      this.setRoleUserInfo = role;
+
+      // 要获得所有角色信息
+      const { data: res } = await this.$http.get("roles");
+      if (res.meta.status !== 200) return;
+      this.rolesList = res.data;
+      this.setRoleDialog = true;
+    },
+    // 修改用户角色
+    async setRole() {
+      if (!this.selectedRoleId) {
+        return this.$message.error("请选择角色！");
+      }
+      console.log(this.setRoleUserInfo);
+      console.log(this.selectedRoleId);
+      console.log(`users/${this.setRoleUserInfo.id}/role`);
+      const { data: res } = await this.$http.put(
+        `users/${this.setRoleUserInfo.id}/role`,
+        {
+          rid: this.selectedRoleId,
+        }
+      );
+      console.log(res);
+      if (res.meta.status !== 200) {
+        return this.$message.error("更新角色失败！");
+      }
+
+      this.$message.success("更新角色成功！");
+      this.getUserList();
+      // this.setRoleDialog = false
     },
   },
 };

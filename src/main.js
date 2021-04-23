@@ -8,6 +8,8 @@ import './assets/css/global.css'
 import '../src/assets/fonts/iconfont.css'
 // 导入axios
 import axios from 'axios'
+// 导入表格插件
+import TreeTable from 'vue-table-with-tree-grid'
 
 axios.defaults.baseURL = "http://timemeetyou.com:8889/api/private/v1/"
 axios.interceptors.request.use(config => {
@@ -17,7 +19,7 @@ axios.interceptors.request.use(config => {
 })
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios
-
+Vue.component('tree-table', TreeTable)
 
 new Vue({
     router,

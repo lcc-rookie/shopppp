@@ -9,6 +9,8 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品分类</el-breadcrumb-item>
     </el-breadcrumb>
+
+    <!-- 卡片区域 -->
     <el-card>
       <el-row>
         <el-button
@@ -47,7 +49,7 @@
           <el-tag type="warning" v-if="scope.row.cat_level === 2">三级</el-tag>
           <el-tag type="success" v-if="scope.row.cat_level === 1">二级</el-tag>
         </template>
-        <templat>
+        <template>
           <el-button icon="el-icon-edit" type="primary" size="mini"
             >编辑</el-button
           >

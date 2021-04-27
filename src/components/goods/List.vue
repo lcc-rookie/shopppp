@@ -56,6 +56,7 @@
               icon="el-icon-edit"
               type="primary"
               size="mini"
+              @click="showEditGoodsDialog(scope.row)"
             ></el-button>
             <el-button
               icon="el-icon-delete"
@@ -79,18 +80,35 @@
       </el-pagination>
     </el-card>
 
-    <!-- 添加商品信息的对话框 -->
+    <!-- 修改商品信息的对话框 -->
     <el-dialog
-      title="添加商品信息"
-      :visible.sync="addGoodsDialogBool"
+      title="修改商品信息"
+      :visible.sync="editGoodsDialogBool"
       width="50%"
+      @close="editGoodsInfoReset"
     >
-      <span>这是一段信息</span>
+      <el-form
+        :model="editGoodsInfo"
+        :rules="editGoodsRules"
+        ref="editGoodsRef"
+        label-width="100px"
+      >
+        <el-form-item label="商品名称" prop="goods_name">
+          <el-input v-model="editGoodsInfo.goods_name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" prop="goods_price">
+          <el-input v-model="editGoodsInfo.goods_price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品重量" prop="goods_weight">
+          <el-input v-model="editGoodsInfo.goods_weight"></el-input>
+        </el-form-item>
+        <el-form-item label="商品数量" prop="goods_number">
+          <el-input v-model="editGoodsInfo.goods_number"></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="addGoodsDialogBool = false">取 消</el-button>
-        <el-button type="primary" @click="addGoodsDialogBool = false"
-          >确 定</el-button
-        >
+        <el-button @click="editGoodsDialogBool = false">取 消</el-button>
+        <el-button type="primary" @click="editGoods">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -108,6 +126,23 @@ export default {
       total: 0,
       goodsList: [],
       addGoodsDialogBool: false,
+
+      editGoodsInfo: {},
+      editGoodsDialogBool: false,
+      editGoodsRules: {
+        goods_name: [
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+        ],
+        goods_price: [
+          { required: true, message: "请输入商品价格", trigger: "blur" },
+        ],
+        goods_weight: [
+          { required: true, message: "请输入商品重量", trigger: "blur" },
+        ],
+        goods_number: [
+          { required: true, message: "请输入商品数量", trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -166,6 +201,33 @@ export default {
     // 添加商品界面
     goAddGoodsPage() {
       this.$router.push("/goods/add");
+    },
+
+    showEditGoodsDialog(info) {
+      this.editGoodsInfo = info;
+      this.editGoodsDialogBool = true;
+      console.log(info);
+    },
+
+    editGoodsInfoReset() {
+      this.$refs.editGoodsRef.resetFields();
+    },
+    editGoods() {
+      this.$refs.editGoodsRef.validate(async (valid) => {
+        if (!valid) {
+          return this.$message.error("请填写表单必选项！");
+        }
+        const { data: res } = await this.$http.put(
+          `goods/${this.editGoodsInfo.goods_id}`,
+          {
+            goods_number: this.editGoodsInfo.goods_number,
+            goods_name: this.editGoodsInfo.goods_name,
+            goods_price: this.editGoodsInfo.goods_price,
+            goods_weight: this.editGoodsInfo.goods_weight,
+          }
+        );
+        console.log(res);
+      });
     },
   },
 };

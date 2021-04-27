@@ -11,6 +11,12 @@ import axios from 'axios'
 // 导入表格插件
 import TreeTable from 'vue-table-with-tree-grid'
 
+// 导入文本编译器组件
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
 axios.defaults.baseURL = "http://timemeetyou.com:8889/api/private/v1/"
 axios.interceptors.request.use(config => {
     config.headers.Authorization = window.sessionStorage.getItem('token');
@@ -33,6 +39,8 @@ Vue.filter("dataFormat", function(originVal) {
     return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
 
 })
+
+Vue.use(VueQuillEditor)
 
 new Vue({
     router,

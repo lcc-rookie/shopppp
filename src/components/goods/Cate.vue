@@ -9,8 +9,6 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品分类</el-breadcrumb-item>
     </el-breadcrumb>
-
-    <!-- 卡片区域 -->
     <el-card>
       <el-row>
         <el-button
@@ -50,16 +48,24 @@
           <el-tag type="success" v-if="scope.row.cat_level === 1">二级</el-tag>
         </template>
         <template slot="edit" slot-scope="scope">
-          <el-button icon="el-icon-edit" type="primary" size="mini"
+          <el-button
+            icon="el-icon-edit"
+            type="primary"
+            size="mini"
+            @click="showEditCataDialog(scope.row.cat_id)"
             >编辑</el-button
           >
-          <el-button icon="el-icon-delete" type="danger" size="mini"
+          <el-button
+            icon="el-icon-delete"
+            type="danger"
+            size="mini"
+            @click="removeGooodsCata(scope.row.cat_id)"
             >删除</el-button
           >
         </template>
       </tree-table>
-      <!-- 分页区域 -->
 
+      <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -108,6 +114,29 @@
         </span>
       </el-dialog>
     </div>
+
+    <!-- 打开编辑页面的对话框 -->
+    <el-dialog
+      title="修改商品分类"
+      :visible.sync="editGoodsCataDialogBool"
+      width="50%"
+      @close="editGoodsCataReset"
+    >
+      <el-form
+        ref="editGoodsCataEef"
+        :model="editGoodsCataInfo"
+        label-width="80px"
+        :rules="addGoodsCataRules"
+      >
+        <el-form-item label="分类名称" prop="cat_name">
+          <el-input v-model="editGoodsCataInfo.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editGoodsCataDialogBool = false">取 消</el-button>
+        <el-button type="primary" @click="editGoodsCata">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -131,7 +160,6 @@ export default {
         },
         {
           label: "是否有效",
-
           type: "template",
           template: "isOk",
         },
@@ -147,14 +175,12 @@ export default {
           minWidth: "160px",
         },
       ],
-
       addGoodsCataDialogBool: false,
       addGoodsCataInfo: {
         cat_pid: 0,
         cat_name: "",
         cat_level: 0,
       },
-
       addGoodsCataRules: {
         cat_name: [
           { required: true, message: "请输入分类名称", trigger: "blur" },
@@ -174,6 +200,8 @@ export default {
       },
       //   选中的父类分级的id数组
       selectedCataId: [],
+      editGoodsCataDialogBool: false,
+      editGoodsCataInfo: {},
     };
   },
   created() {
@@ -200,8 +228,8 @@ export default {
       this.queryCateInfo.pagenum = newPage;
       this.getGoodsCateList();
     },
-    async showAddGoodsCataDialog() {
-      // 获取父类分级的数据列表
+    // 获取父类分级的数据列表
+    async getparentCataList() {
       const { data: res } = await this.$http.get("categories", {
         params: { type: 2 },
       });
@@ -209,11 +237,13 @@ export default {
         return this.$message.error("请求父级分类失败！请稍后重试。。。");
       }
       this.parentCataList = res.data;
+    },
+    showAddGoodsCataDialog() {
+      this.getparentCataList();
       this.addGoodsCataDialogBool = true;
     },
     // 当级联选择器发生变化的时候，监听事件
-
-    async addGoodsCata() {
+    addGoodsCata() {
       this.$refs.addGoodsCataEef.validate(async (valid) => {
         if (!valid) {
           return;
@@ -229,7 +259,6 @@ export default {
         }
         console.log(this.selectedCataId);
         console.log(this.addGoodsCataInfo);
-
         const { data: res } = await this.$http.post(
           "categories",
           this.addGoodsCataInfo
@@ -247,6 +276,56 @@ export default {
       this.$refs.addGoodsCataEef.resetFields();
       // 要把选定的id都清空，不然会一直存在，这个数组和级联选择器是双向绑定的
       this.selectedCataId = [];
+    },
+    async showEditCataDialog(id) {
+      const { data: res } = await this.$http.get("categories/" + id);
+      if (res.meta.status !== 200) {
+        return this.$message.error("获取商品分类名称失败！");
+      }
+      this.editGoodsCataInfo = res.data;
+      this.editGoodsCataDialogBool = true;
+    },
+    editGoodsCataReset() {
+      this.$refs.editGoodsCataEef.resetFields();
+      this.editGoodsCataDialogBool = false;
+    },
+    editGoodsCata() {
+      this.$refs.editGoodsCataEef.validate(async (valid) => {
+        if (!valid) {
+          return;
+        }
+        const { data: res } = await this.$http.put(
+          "categories/" + this.editGoodsCataInfo.cat_id,
+          {
+            cat_name: this.editGoodsCataInfo.cat_name,
+          }
+        );
+        if (res.meta.status !== 200) {
+          return this.$message.error("获取商品分类名称失败！");
+        }
+        console.log(res);
+        this.getGoodsCateList();
+        this.editGoodsCataDialogBool = false;
+      });
+    },
+    async removeGooodsCata(id) {
+      const confirmResults = await this.$confirm(
+        "此操作将永久删除该文件, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      if (confirmResults !== "confirm") {
+        return this.$message.error("已取消删除操作！");
+      }
+      const { data: res } = await this.$http.delete("categories/" + id);
+      if (res.meta.status !== 200) {
+        return this.$message.error("删除操作失败！请稍后重试");
+      }
+      this.getGoodsCateList();
     },
   },
 };

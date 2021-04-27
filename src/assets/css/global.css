@@ -10,3 +10,11 @@ html,
 .el-step__title {
     font-size: 13px;
 }
+
+.el-tag {
+    margin-right: 5px;
+}
+
+.ql-editor {
+    min-height: 400px;
+}

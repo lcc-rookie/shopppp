@@ -9,8 +9,6 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品分类</el-breadcrumb-item>
     </el-breadcrumb>
-
-    <!-- 卡片区域 -->
     <el-card>
       <el-row>
         <el-button
@@ -49,17 +47,12 @@
           <el-tag type="warning" v-if="scope.row.cat_level === 2">三级</el-tag>
           <el-tag type="success" v-if="scope.row.cat_level === 1">二级</el-tag>
         </template>
-<<<<<<< HEAD
-        <template>
-          <el-button icon="el-icon-edit" type="primary" size="mini"
-=======
         <template slot="edit" slot-scope="scope">
           <el-button
             icon="el-icon-edit"
             type="primary"
             size="mini"
             @click="showEditCataDialog(scope.row.cat_id)"
->>>>>>> goods_cate
             >编辑</el-button
           >
           <el-button
@@ -167,7 +160,6 @@ export default {
         },
         {
           label: "是否有效",
-
           type: "template",
           template: "isOk",
         },
@@ -183,14 +175,12 @@ export default {
           minWidth: "160px",
         },
       ],
-
       addGoodsCataDialogBool: false,
       addGoodsCataInfo: {
         cat_pid: 0,
         cat_name: "",
         cat_level: 0,
       },
-
       addGoodsCataRules: {
         cat_name: [
           { required: true, message: "请输入分类名称", trigger: "blur" },
@@ -210,7 +200,6 @@ export default {
       },
       //   选中的父类分级的id数组
       selectedCataId: [],
-
       editGoodsCataDialogBool: false,
       editGoodsCataInfo: {},
     };
@@ -239,7 +228,6 @@ export default {
       this.queryCateInfo.pagenum = newPage;
       this.getGoodsCateList();
     },
-
     // 获取父类分级的数据列表
     async getparentCataList() {
       const { data: res } = await this.$http.get("categories", {
@@ -255,7 +243,6 @@ export default {
       this.addGoodsCataDialogBool = true;
     },
     // 当级联选择器发生变化的时候，监听事件
-
     addGoodsCata() {
       this.$refs.addGoodsCataEef.validate(async (valid) => {
         if (!valid) {
@@ -272,7 +259,6 @@ export default {
         }
         console.log(this.selectedCataId);
         console.log(this.addGoodsCataInfo);
-
         const { data: res } = await this.$http.post(
           "categories",
           this.addGoodsCataInfo
@@ -297,7 +283,6 @@ export default {
         return this.$message.error("获取商品分类名称失败！");
       }
       this.editGoodsCataInfo = res.data;
-
       this.editGoodsCataDialogBool = true;
     },
     editGoodsCataReset() {
@@ -309,7 +294,6 @@ export default {
         if (!valid) {
           return;
         }
-
         const { data: res } = await this.$http.put(
           "categories/" + this.editGoodsCataInfo.cat_id,
           {

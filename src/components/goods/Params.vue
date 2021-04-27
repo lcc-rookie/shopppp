@@ -237,22 +237,17 @@ export default {
         children: "children",
       },
       activeName: "many",
-
       // 动态参数的数据
       manyAttrList: [],
       // 静态参数的数据
       onlyAttrList: [],
-
       addAttrDialogBool: false,
-
       addAttrInfo: {},
-
       addGoodsAttrRules: {
         attr_name: [
           { required: true, message: "请输入属性名称", trigger: "blur" },
         ],
       },
-
       editAttrDialogBool: false,
       editAttrInfo: {},
     };
@@ -264,7 +259,6 @@ export default {
     // 处理级联选择器的函数
     async handleChange() {
       // 如果选择的不是三级分类，则动态参数和和静态属性全部清空
-
       // 要控制只能选择第三层标签
       this.getGoodsAttr();
     },
@@ -275,7 +269,6 @@ export default {
       }
       this.goodsCateList = res.data;
     },
-
     // 获得所选商品的属性
     async getGoodsAttr() {
       if (this.selectedId.length !== 3) {
@@ -294,12 +287,10 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error("获取参数列表失败");
       }
-
       res.data.forEach((element) => {
         element.attr_vals = element.attr_vals
           ? element.attr_vals.split(" ")
           : [];
-
         // 为了防止所有的输入框共用一个inputVisibleBool和inputValue
         element.inputVisibleBool = false;
         element.inputValue = "";
@@ -321,14 +312,12 @@ export default {
     addAttrReset() {
       this.$refs.addAttrRef.resetFields();
     },
-
     // 为商品增加属性
     addGoodsAttr() {
       this.$refs.addAttrRef.validate(async (valid) => {
         if (!valid) {
           return;
         }
-
         const { data: res } = await this.$http.post(
           `categories/${this.cataId}/attributes`,
           {
@@ -341,7 +330,6 @@ export default {
           return this.$message.error("获取商品属性失败");
         }
         this.$message.success("添加参数成功");
-
         this.getGoodsAttr();
         this.addAttrDialogBool = false;
       });
@@ -353,7 +341,6 @@ export default {
       this.editAttrDialogBool = true;
       this.editAttrInfo = info;
     },
-
     // 编辑商品的属性/参数
     editGoodsAttr() {
       this.$refs.editAttrRef.validate(async (valid) => {
@@ -373,7 +360,6 @@ export default {
         this.editAttrDialogBool = false;
       });
     },
-
     // 删除某个属性/参数
     async removeAttr(info) {
       this.editAttrInfo = info;
@@ -425,7 +411,6 @@ export default {
       this.saveAttrsList(info);
       info.inputValue = "";
     },
-
     showInput(info) {
       info.inputVisibleBool = true;
       // 让文本框自动获取焦点
@@ -434,14 +419,12 @@ export default {
         this.$refs.saveTagInputRef.$refs.input.focus();
       });
     },
-
     // 删除对应的参数可选项
     handleClose(i, info) {
       info.attr_vals.splice(i, 1);
       this.saveAttrsList(info);
     },
   },
-
   computed: {
     text() {
       return this.activeName === "many" ? "动态参数" : "静态属性";
@@ -457,11 +440,9 @@ export default {
 .el-menu-item :hover {
   background-color: blue;
 }
-
 .input-new-tag {
   width: 150px;
 }
-
 .el-tag {
   margin-right: 10px;
 }

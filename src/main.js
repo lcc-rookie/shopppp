@@ -20,6 +20,19 @@ axios.interceptors.request.use(config => {
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios
 Vue.component('tree-table', TreeTable)
+    // 定义一个全局的过滤器
+Vue.filter("dataFormat", function(originVal) {
+    const dt = new Date(originVal)
+    const y = dt.getFullYear();
+    // 月份是从0开始算的
+    const m = (dt.getMonth() + 1 + '').padStart(2, '0');
+    const d = (dt.getDate() + '').padStart(2, '0');
+    const hh = (dt.getHours() + '').padStart(2, '0');
+    const mm = (dt.getMinutes() + '').padStart(2, '0');
+    const ss = (dt.getSeconds() + '').padStart(2, '0');
+    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+
+})
 
 new Vue({
     router,

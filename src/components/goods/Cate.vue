@@ -49,7 +49,7 @@
           <el-tag type="warning" v-if="scope.row.cat_level === 2">三级</el-tag>
           <el-tag type="success" v-if="scope.row.cat_level === 1">二级</el-tag>
         </template>
-        <template>
+        <template slot="edit" slot-scope="scope">
           <el-button icon="el-icon-edit" type="primary" size="mini"
             >编辑</el-button
           >

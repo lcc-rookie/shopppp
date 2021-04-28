@@ -9,21 +9,19 @@ import Cate from "../components/goods/Cate.vue"
 import Params from "../components/goods/Params.vue"
 import List from "../components/goods/List.vue"
 import Add from '../components/goods/add.vue'
+import Order from '../components/order/orders.vue'
 
 
 
 
 Vue.use(VueRouter)
 
-const routes = [{
-        path: '/',
-        redirect: '/login'
-    },
+const routes = [
+    { path: '/', redirect: '/login' },
 
     {
         path: '/login',
         name: 'login',
-        // 此处注意，是component，不是components
         component: Login
     },
     {
@@ -31,24 +29,26 @@ const routes = [{
         component: home,
         redirect: '/users',
         children: [{
-            path: "/users",
-            component: User
-        }, {
-            path: '/rights',
-            component: Rights
-        }, {
-            path: '/roles',
-            component: Roles
-        }, {
-            path: "/categories",
-            component: Cate
-        }, {
-            path: "/params",
-            component: Params
-        }, {
-            path: "/goods",
-            component: List,
-        }, { path: '/goods/add', component: Add }]
+                path: "/users",
+                component: User
+            }, {
+                path: '/rights',
+                component: Rights
+            }, {
+                path: '/roles',
+                component: Roles
+            }, {
+                path: "/categories",
+                component: Cate
+            }, {
+                path: "/params",
+                component: Params
+            }, {
+                path: "/goods",
+                component: List,
+            }, { path: '/goods/add', component: Add },
+            { path: '/orders', component: Order }
+        ]
     }
 ]
 

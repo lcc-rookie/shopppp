@@ -18,3 +18,8 @@ html,
 .ql-editor {
     min-height: 400px;
 }
+
+.el-pagination {
+    text-align: right;
+    margin-top: 15px;
+}

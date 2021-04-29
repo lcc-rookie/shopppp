@@ -17,10 +17,21 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+// 导入网页加载进度条的包和样式
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+// 在request拦截器中展示进度条，NProgress.start()
 axios.defaults.baseURL = "http://timemeetyou.com:8889/api/private/v1/"
 axios.interceptors.request.use(config => {
     config.headers.Authorization = window.sessionStorage.getItem('token');
+    NProgress.start();
+    return config
+})
 
+// 在reponse拦截器中隐藏进度条，NProgress.done()
+axios.interceptors.response.use(config => {
+    NProgress.done()
     return config
 })
 Vue.config.productionTip = false;
